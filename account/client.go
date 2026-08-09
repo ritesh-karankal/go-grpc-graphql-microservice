@@ -35,7 +35,7 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error)
 		ctx,
 		&pb.PostAccountRequest{Name: name},
 	)
-	if err := nil{
+	if err != nil{
 		return nil, err
 	}
 	return &Account{

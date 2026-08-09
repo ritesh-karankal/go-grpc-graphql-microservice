@@ -1,4 +1,4 @@
-package account 
+package account
 
 import (
 	"context"
@@ -13,7 +13,7 @@ type Service interface {
 }
 
 type Account struct {
-	ID string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -26,9 +26,9 @@ func NewService(r Repository) Service {
 }
 
 func (s *accountService) PostAccount(ctx context.Context, name string) (*Account, error) {
-	a := &Account {
+	a := &Account{
 		Name: name,
-		ID: ksuid.New().String(),
+		ID:   ksuid.New().String(),
 	}
 
 	if err := s.respository.PutAccount(ctx, *a); err != nil {
@@ -38,7 +38,7 @@ func (s *accountService) PostAccount(ctx context.Context, name string) (*Account
 }
 
 func (s *accountService) GetAccount(ctx context.Context, id string) (*Account, error) {
-	return s.respository.GetAccountById(ctx, id)
+	return s.respository.GetAccountByID(ctx, id)
 }
 
 func (s *accountService) GetAccounts(ctx context.Context, skip uint64, take uint64) ([]Account, error) {
