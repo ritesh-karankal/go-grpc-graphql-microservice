@@ -1,6 +1,8 @@
 syntax = "proto3"
 package pb;
 
+option go_package = "github.com/ritesh-karankal/go-grpc-graphql-micro/catalog/pb";
+
 message Product {
     string id = 1;
     string name = 2;
