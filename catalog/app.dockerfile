@@ -1,13 +1,29 @@
-FROM golang:1.13-alpine3.11 AS build
-RUN apk --no-cache add gcc g++ make ca-certificates
-WORKDIR /go/src/github.com/ritesh-karankal/go-grpc-graphql-micro
-COPY go.mod go.sum ./
-COPY vendor vendor
-COPY catalog catalog
-RUN GO111MODULE=on go build -mod vendor -o /go/bin/app ./catalog/cmd/catalog
+# Build stage
+FROM golang:1.24-alpine AS builder
 
-FROM alpine:3.11
-WORKDIR /usr/bin
-COPY --from=build /go/bin .
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY catalog ./catalog
+
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -mod=vendor \
+    -o /app/app \
+    ./catalog/cmd/catalog
+
+
+# Runtime stage
+FROM alpine:3.22
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/app .
+
 EXPOSE 8080
-CMD ["app"]
+
+CMD ["./app"]

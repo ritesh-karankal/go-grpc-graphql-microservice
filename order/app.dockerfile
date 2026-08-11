@@ -6,13 +6,16 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 
 COPY go.mod go.sum ./
-RUN go mod download
+COPY vendor ./vendor
 
-COPY . .
+COPY account ./account
+COPY catalog ./catalog
+COPY order ./order
 
 RUN CGO_ENABLED=0 GOOS=linux go build \
+    -mod=vendor \
     -o /app/app \
-    ./account/cmd/account
+    ./order/cmd/order
 
 
 # Runtime stage
