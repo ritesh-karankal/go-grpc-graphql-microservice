@@ -16,14 +16,19 @@ type Client struct {
 
 func NewClient(url string) (*Client, error) {
 	conn, err := grpc.NewClient(
-		url,
+		"dns:///"+url,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		return nil, err
 	}
+
 	c := pb.NewAccountServiceClient(conn)
-	return &Client{conn, c}, nil
+
+	return &Client{
+		conn:    conn,
+		service: c,
+	}, nil
 }
 
 func (c *Client) Close() {
@@ -35,7 +40,7 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error)
 		ctx,
 		&pb.PostAccountRequest{Name: name},
 	)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return &Account{

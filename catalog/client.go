@@ -16,14 +16,19 @@ type Client struct {
 
 func NewClient(url string) (*Client, error) {
 	conn, err := grpc.NewClient(
-		url,
+		"dns:///"+url,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		return nil, err
 	}
+
 	c := pb.NewCatalogServiceClient(conn)
-	return &Client{conn, c}, nil
+
+	return &Client{
+		conn:    conn,
+		service: c,
+	}, nil
 }
 
 func (c *Client) Close() {
