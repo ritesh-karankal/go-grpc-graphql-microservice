@@ -25,7 +25,7 @@ type Order struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	CreatedAt     []byte                 `protobuf:"bytes,2,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	AccountAt     string                 `protobuf:"bytes,3,opt,name=accountAt,proto3" json:"accountAt,omitempty"`
+	AccountId     string                 `protobuf:"bytes,3,opt,name=accountId,proto3" json:"accountId,omitempty"`
 	TotalPrice    float64                `protobuf:"fixed64,4,opt,name=totalPrice,proto3" json:"totalPrice,omitempty"`
 	Products      []*Order_OrderProduct  `protobuf:"bytes,5,rep,name=products,proto3" json:"products,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -76,9 +76,9 @@ func (x *Order) GetCreatedAt() []byte {
 	return nil
 }
 
-func (x *Order) GetAccountAt() string {
+func (x *Order) GetAccountId() string {
 	if x != nil {
-		return x.AccountAt
+		return x.AccountId
 	}
 	return ""
 }
@@ -99,7 +99,7 @@ func (x *Order) GetProducts() []*Order_OrderProduct {
 
 type PostOrderRequest struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
-	AcccountId    string                           `protobuf:"bytes,2,opt,name=acccountId,proto3" json:"acccountId,omitempty"`
+	AccountId     string                           `protobuf:"bytes,2,opt,name=accountId,proto3" json:"accountId,omitempty"`
 	Products      []*PostOrderRequest_OrderProduct `protobuf:"bytes,4,rep,name=products,proto3" json:"products,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -135,9 +135,9 @@ func (*PostOrderRequest) Descriptor() ([]byte, []int) {
 	return file_order_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PostOrderRequest) GetAcccountId() string {
+func (x *PostOrderRequest) GetAccountId() string {
 	if x != nil {
-		return x.AcccountId
+		return x.AccountId
 	}
 	return ""
 }
@@ -505,7 +505,7 @@ const file_order_proto_rawDesc = "" +
 	"\x05Order\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1c\n" +
 	"\tcreatedAt\x18\x02 \x01(\fR\tcreatedAt\x12\x1c\n" +
-	"\taccountAt\x18\x03 \x01(\tR\taccountAt\x12\x1e\n" +
+	"\taccountId\x18\x03 \x01(\tR\taccountId\x12\x1e\n" +
 	"\n" +
 	"totalPrice\x18\x04 \x01(\x01R\n" +
 	"totalPrice\x122\n" +
@@ -515,11 +515,9 @@ const file_order_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05price\x18\x04 \x01(\x01R\x05price\x12\x1a\n" +
-	"\bquantity\x18\x05 \x01(\rR\bquantity\"\xbb\x01\n" +
-	"\x10PostOrderRequest\x12\x1e\n" +
-	"\n" +
-	"acccountId\x18\x02 \x01(\tR\n" +
-	"acccountId\x12=\n" +
+	"\bquantity\x18\x05 \x01(\rR\bquantity\"\xb9\x01\n" +
+	"\x10PostOrderRequest\x12\x1c\n" +
+	"\taccountId\x18\x02 \x01(\tR\taccountId\x12=\n" +
 	"\bproducts\x18\x04 \x03(\v2!.pb.PostOrderRequest.OrderProductR\bproducts\x1aH\n" +
 	"\fOrderProduct\x12\x1c\n" +
 	"\tproductId\x18\x02 \x01(\tR\tproductId\x12\x1a\n" +
