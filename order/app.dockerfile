@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.24-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 RUN apk add --no-cache ca-certificates
 
@@ -12,7 +12,6 @@ COPY catalog ./catalog
 COPY order ./order
 
 RUN CGO_ENABLED=0 GOOS=linux go build \
-    -mod=vendor \
     -o /app/app \
     ./order/cmd/order
 
