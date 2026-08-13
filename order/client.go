@@ -32,7 +32,7 @@ func (c *Client) Close() {
 	c.conn.Close()
 }
 
-func (c *Client) PostOrder(ctx context.Context, accountID string, ) () {
+func (c *Client) PostOrder(ctx context.Context, accountID string, products []OrderedProduct) (*Order, error) {
 	protoProducts := []*pb.PostOrderRequest_OrderProduct{}
 	for _, p := range products {
 		protoProducts = append(protoProducts, &pb.PostOrderRequest_OrderProduct{
@@ -45,7 +45,7 @@ func (c *Client) PostOrder(ctx context.Context, accountID string, ) () {
 	r, err := c.service.PostOrder(
 		ctx,
 		&pb.PostOrderRequest{
-			AccountID: accountID,
+			AccountId: accountID,
 			Products:  protoProducts,
 		},
 	)
@@ -60,7 +60,7 @@ func (c *Client) PostOrder(ctx context.Context, accountID string, ) () {
 
 	return &Order{
 		ID:         newOrder.Id,
-		createdAt:  newOrderCreatedAt,
+		CreatedAt:  newOrderCreatedAt,  
 		TotalPrice: newOrder.TotalPrice,
 		AccountID:  newOrder.AccountId,
 		Products:   products,
@@ -69,9 +69,8 @@ func (c *Client) PostOrder(ctx context.Context, accountID string, ) () {
 
 
 func (c *Client) GetOrdersForAccount(ctx context.Context, accountID string) ([]Order, error) {
-	r, err := c.service.GetOrdersForAccount(ctx, &pb.GetOrdersForAccountRequeest{
+	r, err := c.service.GetOrdersForAccount(ctx, &pb.GetOrdersForAccountRequest{
 		AccountId: accountID,
-
 	})
 
 	if err != nil {
@@ -84,26 +83,29 @@ func (c *Client) GetOrdersForAccount(ctx context.Context, accountID string) ([]O
 		newOrder := Order{
 			ID:         orderProto.Id,
 			TotalPrice: orderProto.TotalPrice,
-			AccountID:  orderProto.AccoutId,
+			AccountID:  orderProto.AccountId,
 		}
 
 		newOrder.CreatedAt = time.Time{}
-		newOrder.CreatedAt.UnmarshalBinary(orderProto.CreatedAt)
+		if err := newOrder.CreatedAt.UnmarshalBinary(orderProto.CreatedAt); err != nil {
+        return nil, err
+    }
 
 		products := []OrderedProduct{}
-		for _, p := range ordrProto.Products {
+		for _, p := range orderProto.Products {
 			products = append(products, OrderedProduct{
 				ID:          p.Id,
 				Quantity:    p.Quantity,
 				Name:        p.Name,
 				Description: p.Description,
-				Price:       p.Price
+				Price:       p.Price,
 			})
 
-			newOrder.Products = products
-
-			orders = append(orders, newOrder)
+			
 		}
+		newOrder.Products = products
+
+		orders = append(orders, newOrder)
 	}
 	return orders, nil
 

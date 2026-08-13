@@ -15,6 +15,7 @@ import (
 )
 
 type grpcServer struct {
+	pb.UnimplementedOrderServiceServer
 	service       Service
 	accountClient *account.Client
 	catalogClient *catalog.Client
@@ -41,9 +42,10 @@ func ListenGRPC(s Service, accountURL, catalogURL string, port int) error {
 
 	serv := grpc.NewServer()
 	pb.RegisterOrderServiceServer(serv, &grpcServer{
-		s,
-		accountClient,
-		catalogClient,
+		UnimplementedOrderServiceServer: pb.UnimplementedOrderServiceServer{},
+		service:                         s,
+		accountClient:                   accountClient,
+		catalogClient:                   catalogClient,
 	})
 
 	reflection.Register(serv)
@@ -64,7 +66,7 @@ func (s *grpcServer) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb
 		productIDs = append(productIDs, p.ProductId)
 	}
 
-	OrderedProducts, err := s.catalogClient.GetProducts(ctx, 0, 0, productIDs, "")
+	orderedProducts, err := s.catalogClient.GetProducts(ctx, 0, 0, productIDs, "")
 	if err != nil {
 		log.Println("Error getting products: ", err)
 		return nil, errors.New("products not found")
@@ -81,13 +83,13 @@ func (s *grpcServer) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb
 		}
 
 		for _, rp := range r.Products {
-			if rp.ProductID == p.ID {
+			if rp.ProductId == p.ID {
 				product.Quantity = rp.Quantity
 				break
 			}
 		}
 
-		if product.Quantity != nil {
+		if product.Quantity != 0 {
 			products = append(products, product)
 		}
 	}
@@ -102,13 +104,13 @@ func (s *grpcServer) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb
 		Id:         order.ID,
 		AccountId:  order.AccountID,
 		TotalPrice: order.TotalPrice,
-		Producs:    []*pb.Order_OrderProduct{}
+		Products:   []*pb.Order_OrderProduct{},
 	}
 
 	orderProto.CreatedAt, _ = order.CreatedAt.MarshalBinary()
 	for _, p := range order.Products {
-		orderProto.Products = append(order.Proto.Products, &pb.Order_OrderProduct{
-			ID:          p.ID,
+		orderProto.Products = append(orderProto.Products, &pb.Order_OrderProduct{
+			Id:          p.ID,
 			Name:        p.Name,
 			Description: p.Description,
 			Price:       p.Price,
@@ -116,7 +118,7 @@ func (s *grpcServer) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb
 
 		})
 	}
-	return &pb.PostOrderRespone{Order: orderProto}, nil
+	return &pb.PostOrderResponse{Order: orderProto}, nil
 }
 
 
@@ -142,7 +144,7 @@ func (s *grpcServer) GetOrdersForAccount(ctx context.Context, r *pb.GetOrdersFor
 
 	products, err := s.catalogClient.GetProducts(ctx, 0, 0, productIDs, "")
 	if err != nil {
-		log.Println("Error getting account products: "err)
+		log.Println("Error getting account products: ", err)
 		return nil, err
 	}
 
@@ -159,23 +161,24 @@ func (s *grpcServer) GetOrdersForAccount(ctx context.Context, r *pb.GetOrdersFor
 
 		for _, product := range o.Products {
 			for _, p := range products {
-				product.Name = p.Name
-				product.Description = p.Description
-				product.Price = p.Price
-				break
+				if product.ID == p.ID {
+					product.Name = p.Name
+					product.Description = p.Description
+					product.Price = p.Price
+					break
+				}
 			}
+
+			op.Products = append(op.Products, &pb.Order_OrderProduct{
+				Id:          product.ID,
+				Name:        product.Name,
+				Description: product.Description,
+				Price:       product.Price,
+				Quantity:    product.Quantity,
+			})
 		}
 
-		op.Products = append(op.Products, &pb.Order_OrderProduct{
-			ID:          product.ID,
-			Name:        product.Name,
-			Description: product.Description,
-			Price:       product.Price,
-			Quantity:    product.Quantity,
-		})
+		orders = append(orders, op)
 	}
-
-	order = append(orders, op)
-	}
-	return&pb.GetOrdersForAccountResponse{Orders:orders},nil
+	return &pb.GetOrdersForAccountResponse{Orders: orders}, nil
 }

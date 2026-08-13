@@ -22,10 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var r order.Respository
+	var r order.Repository
 
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		r, err = order.NewPostgreRepository(cfg.DatabaseURL)
+		r, err = order.NewPostgresRepository(cfg.DatabaseURL)
 		if err != nil {
 			log.Println(err)
 		}

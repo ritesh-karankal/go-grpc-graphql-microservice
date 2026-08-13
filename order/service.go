@@ -15,10 +15,10 @@ type Service interface {
 
 type Order struct {
 	ID         string
-	createdAt  time.Time
+	CreatedAt  time.Time
 	TotalPrice float64
 	AccountID  string
-	Products   []OrdererdProduct
+	Products   []OrderedProduct
 }
 
 type OrderedProduct struct {

@@ -15,7 +15,7 @@ message Order {
 
     string id = 1;
     bytes createdAt = 2;
-    string accountAt = 3;
+    string accountId = 3;
     double totalPrice = 4;
     repeated OrderProduct products = 5;
 }
@@ -26,7 +26,7 @@ message PostOrderRequest {
         uint32 quantity = 3;
     }
 
-    string acccountId = 2;
+    string accountId = 2;
     repeated OrderProduct products = 4;
 }
 
