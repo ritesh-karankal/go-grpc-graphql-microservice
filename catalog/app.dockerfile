@@ -6,7 +6,6 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /app
 
 COPY go.mod go.sum ./
-COPY vendor ./vendor
 COPY catalog ./catalog
 
 RUN CGO_ENABLED=0 GOOS=linux go build \
