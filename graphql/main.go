@@ -10,9 +10,9 @@ import (
 )
 
 type AppConfig struct {
-	AccountURL string `envconfig:"ACCOUNT_SERVICE_URL`
-	CatalogURL string `envconfig:"CATALOG_SERVICE_URL`
-	OrderURL   string `envconfig:"ORDER_SERVICE_URL`
+	AccountURL string `envconfig:"ACCOUNT_SERVICE_URL"`
+	CatalogURL string `envconfig:"CATALOG_SERVICE_URL"`
+	OrderURL   string `envconfig:"ORDER_SERVICE_URL"`
 }
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.Handle("/graphql", handler.New((s.ToExecutableSchema())))
+	http.Handle("/graphql", handler.New(s.ToExecutableSchema()))
 	http.Handle("/playground", playground.Handler("ritesh", "/graphql"))
 
 	log.Fatal(http.ListenAndServe(":8000", nil))

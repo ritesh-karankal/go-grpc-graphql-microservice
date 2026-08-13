@@ -9,7 +9,7 @@ type queryResolver struct {
 	server *Server
 }
 
-func (r *queryResolver) Accounts(ctx context.Context, pagination *PaginationInput, id *string) ([]Account, error) {
+func (r *queryResolver) Accounts(ctx context.Context, pagination *PaginationInput, id *string) ([]*Account, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -21,7 +21,7 @@ func (r *queryResolver) Accounts(ctx context.Context, pagination *PaginationInpu
 		}
 
 		return []*Account{{
-			ID: r.ID,
+			ID:   r.ID,
 			Name: r.Name,
 		}}, nil
 	}
@@ -41,17 +41,17 @@ func (r *queryResolver) Accounts(ctx context.Context, pagination *PaginationInpu
 	var accounts []*Account
 	for _, a := range accountList {
 		account := &Account{
-		ID: a.ID,
-		Name: a.Name,
+			ID:   a.ID,
+			Name: a.Name,
+		}
+
+		accounts = append(accounts, account)
 	}
-
-	accounts = append(accounts, account)
-}
-
+	return accounts, nil
 
 }
 
-func (r *queryResolver) Products(ctx context.Context, pagination *PaginationInput, query *string, id *string) ([]Product, error) {
+func (r *queryResolver) Products(ctx context.Context, pagination *PaginationInput, query *string, id *string) ([]*Product, error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -63,10 +63,10 @@ func (r *queryResolver) Products(ctx context.Context, pagination *PaginationInpu
 		}
 
 		return []*Product{{
-			ID: r.ID,
-			Name: r.Name,
+			ID:          r.ID,
+			Name:        r.Name,
 			Description: r.Description,
-			Price: r.Price,
+			Price:       r.Price,
 		}}, nil
 	}
 
@@ -90,10 +90,10 @@ func (r *queryResolver) Products(ctx context.Context, pagination *PaginationInpu
 	for _, a := range productList {
 		products = append(products,
 			&Product{
-				ID: a.ID,
-				Name: a.Name,
+				ID:          a.ID,
+				Name:        a.Name,
 				Description: a.Description,
-				Price: a.Price,
+				Price:       a.Price,
 			},
 		)
 	}
