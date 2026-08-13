@@ -1,9 +1,15 @@
 package main
 
+import (
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/ritesh-karankal/go-grpc-graphql-micro/account"
+	"github.com/ritesh-karankal/go-grpc-graphql-micro/catalog"
+	"github.com/ritesh-karankal/go-grpc-graphql-micro/order"
+)
 type Server struct {
 	accountClient *account.Client
-	catalogClient *account.Client
-	orderClient   *account.Client
+	catalogClient *catalog.Client
+	orderClient   *order.Client
 }
 
 func NewGraphQLServer(accountUrl, catalogUrl, orderUrl string) (*Server, error) {
@@ -51,5 +57,7 @@ func NewGraphQLServer(accountUrl, catalogUrl, orderUrl string) (*Server, error) 
 // }
 
 // func (s *Server) ToExecultableSchema() graphql.ExecutableSchema {
-
+	// return NewExecutableSchema(Config{
+	// 	Resolvers: s,
+	// })
 // }
