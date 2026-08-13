@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -27,8 +28,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.Handle("/graphql", handler.New(s.ToExecutableSchema()))
+	graphqlServer := handler.New(s.ToExecutableSchema())
+
+	graphqlServer.AddTransport(transport.Options{})
+	graphqlServer.AddTransport(transport.GET{})
+	graphqlServer.AddTransport(transport.POST{})
+
+	http.Handle("/graphql", graphqlServer)
+
 	http.Handle("/playground", playground.Handler("ritesh", "/graphql"))
 
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
