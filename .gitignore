@@ -1,0 +1,18 @@
+# Environment variables / secrets
+.env
+
+# Go build output
+/bin/
+/build/
+/dist/
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE / editors
+.idea/
+.vscode/
