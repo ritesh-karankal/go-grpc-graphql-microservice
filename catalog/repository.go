@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("Entitu not found")
+	ErrNotFound = errors.New("Entity not found")
 )
 
 type Repository interface {
@@ -37,6 +37,7 @@ func NewElasticRepository(url string) (Repository, error) {
 	client, err := elastic.NewClient(
 		elastic.SetURL(url),
 		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false),
 	)
 
 	if err != nil {
@@ -94,7 +95,7 @@ func (r *elasticRepository) GetProductByID(ctx context.Context, id string) (*Pro
 func (r *elasticRepository) ListProducts(ctx context.Context, skip uint64, take uint64) ([]Product, error) {
 	res, err := r.client.Search().
 		Index("catalog").
-		Type("Product").
+		Type("product").
 		Query(elastic.NewMatchAllQuery()).
 		From(int(skip)).Size(int(take)).
 		Do(ctx)
@@ -157,8 +158,8 @@ func (r *elasticRepository) ListProductsWithIDs(ctx context.Context, ids []strin
 func (r *elasticRepository) SearchProducts(ctx context.Context, query string, skip uint64, take uint64) ([]Product, error) {
 	res, err := r.client.Search().
 		Index("catalog").
-		Type("Product").
-		Query(elastic.NewMultiMatchQuery(query, "name", "decription")).
+		Type("product").
+		Query(elastic.NewMultiMatchQuery(query, "name", "description")).
 		From(int(skip)).Size(int(take)).
 		Do(ctx)
 

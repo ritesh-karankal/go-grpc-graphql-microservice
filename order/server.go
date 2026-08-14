@@ -33,7 +33,7 @@ func ListenGRPC(s Service, accountURL, catalogURL string, port int) error {
 		return err
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%id", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		accountClient.Close()
 		catalogClient.Close()
